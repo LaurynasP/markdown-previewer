@@ -1,76 +1,117 @@
 import React, { Component } from 'react';
-import { createStore, dispatch } from 'redux';
 import './App.css';
-/*________________________________Redux______________________________________*/
-
-//Reducers
-function editorReducer(state = {text: "Type to edit!"}, action) {
-  switch (action.type) {
-    case "UPDATE": return {
-      text: action.text
+import marked from 'marked';
+import jquery from 'jquery';
+class MarkdownApp extends Component {
+  constructor(props){
+    super(props);
+    this.state = {
+      text: defaultState.text,
+      editorMaximized: false,
+      previewerMaximized: false
     };
-    default: return null;
+    this.updateText = this.updateText.bind(this);
+    this.setDefaultSize = this.setDefaultSize.bind(this);
   }
-}
 
-function previewerReducer(state, action) {
-  switch(action.type) {
-    default: return null;
+  updateText = (newText) => {
+    this.setState({
+      text: newText.target.value
+    });
+    document.getElementById('preview').innerHTML =
+      marked(newText.target.value);
   }
-}
 
-//Store
-
-const store = createStore(editorReducer);
-
-//Action creators
-
-const updateText = (newText) => {
-  return {
-    type: "UPDATE",
-    text: newText
-  }
-};
-
-/*________________________________React______________________________________*/
-
-class Editor extends Component {
+  setDefaultSize = () => {
+    this.setState({
+      editorMaximized: false,
+      previewerMaximized: false
+    });
+  };
+  editorMaximize = () => {
+    this.setState({
+      editorMaximized: true,
+      previewerMaximized: false
+    });
+  };
+  previewMaximize = () => {
+    this.setState({
+      editorMaximized: false,
+      previewerMaximized: true
+    });
+  };
   render() {
+    if(this.state.editorMaximized == true){
+    }
     return (
+    <div>
       <div id = "editorWindow">
-        <div class = "windowTop">
-          <h3 class = "windowTitle" ><i class="fas fa-pencil-alt"></i> Editor</h3>
+        <div className = "windowTop">
+          <h3 className = "windowTitle" ><i className="fas fa-pencil-alt"></i> Editor</h3>
         </div>
-        <textarea id = "editor" />
+        <textarea id = "editor" value = {this.state.text} onChange = {this.updateText}/>
       </div>
-    );
-  }
-}
 
-class Previewer extends Component {
-  render() {
-    return (
       <div id = "previewerWindow">
-        <div class = "windowTop">
-          <h3 class = "windowTitle" ><i class="fas fa-file-alt"></i> Previewer</h3>
+        <div className = "windowTop">
+          <h3 className = "windowTitle" ><i className="fas fa-file-alt"></i> Previewer</h3>
         </div>
-        <p>
-        </p>
+        <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+          <div id='preview' dangerouslySetInnerHTML={{__html: marked(defaultState.text)}}/>
       </div>
-    );
+    </div>
+  );
   }
 }
+export default MarkdownApp;
 
+/*________________________________Data______________________________________*/
 
-class App extends Component {
-  render() {
-    return (
-      <div className="App">
-        <Editor />
-        <Previewer />
-      </div>
-    );
+const defaultState = {
+  text: `# Welcome to my React Markdown Previewer!
+
+## This is a sub-heading...
+### And here's some other cool stuff:
+
+Heres some code, \`<div></div>\`, between 2 backticks.
+
+\`\`\`
+// this is multi-line code:
+
+function anotherExample(firstLine, lastLine) {
+  if (firstLine == '\`\`\`' && lastLine == '\`\`\`') {
+    return multiLineCode;
   }
 }
+\`\`\`
 
-export default App;
+You can also make text **bold**... whoa!
+Or _italic_.
+Or... wait for it... **_both!_**
+And feel free to go crazy ~~crossing stuff out~~.
+
+There's also [links](https://www.freecodecamp.com), and
+> Block Quotes!
+
+And if you want to get really crazy, even tables:
+
+Wild Header | Crazy Header | Another Header?
+------------ | ------------- | -------------
+Your content can | be here, and it | can be here....
+And here. | Okay. | I think we get it.
+
+- And of course there are lists.
+  - Some are bulleted.
+     - With different indentation levels.
+        - That look like this.
+
+
+1. And there are numbererd lists too.
+1. Use just 1s if you want!
+1. But the list goes on...
+- Even if you use dashes or asterisks.
+* And last but not least, let's not forget embedded images:
+
+![React Logo w/ Text](https://goo.gl/Umyytc)
+`
+};
