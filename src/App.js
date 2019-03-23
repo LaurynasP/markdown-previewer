@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import './App.css';
 import marked from 'marked';
-import jquery from 'jquery';
+import $ from 'jquery';
 class MarkdownApp extends Component {
   constructor(props){
     super(props);
@@ -11,9 +11,9 @@ class MarkdownApp extends Component {
       previewerMaximized: false
     };
     this.updateText = this.updateText.bind(this);
-    this.setDefaultSize = this.setDefaultSize.bind(this);
+    this.handleEditor = this.handleEditor.bind(this);
+    this.handlePreview = this.handlePreview.bind(this);
   }
-
   updateText = (newText) => {
     this.setState({
       text: newText.target.value
@@ -28,33 +28,61 @@ class MarkdownApp extends Component {
       previewerMaximized: false
     });
   };
-  editorMaximize = () => {
-    this.setState({
-      editorMaximized: true,
-      previewerMaximized: false
-    });
+  handleEditor = () => {
+    if(this.state.editorMaximized === false) {
+      $("#previewerWindow").css("display", "none");
+      $("#editorWindow").css("width", "90vw");
+      $("#editor").css("height", "70vh");
+      this.setState({
+        editorMaximized: true,
+        previewerMaximized: false
+      });
+    }
+    else {
+      $("#previewerWindow").css("display", "block");
+      $("#editorWindow").css("width", "40vw");
+      $("#editor").css("height", "40vh");
+      this.setState({
+        editorMaximized: false,
+        previewerMaximized: false
+      });
+    }
   };
-  previewMaximize = () => {
-    this.setState({
-      editorMaximized: false,
-      previewerMaximized: true
-    });
+  handlePreview = () => {
+    if(this.state.previewerMaximized === false) {
+      $("#editorWindow").css("display", "none");
+      $("#previewerWindow").css("width", "90vw");
+      this.setState({
+        editorMaximized: false,
+        previewerMaximized: true
+      });
+    }
+    else {
+      $("#editorWindow").css("display", "block");
+      $("#previewerWindow").css("width", "60vw");
+      this.setState({
+        editorMaximized: false,
+        previewerMaximized: false
+      });
+    }
   };
   render() {
-    if(this.state.editorMaximized == true){
-    }
     return (
     <div>
       <div id = "editorWindow">
         <div className = "windowTop">
-          <h3 className = "windowTitle" ><i className="fas fa-pencil-alt"></i> Editor</h3>
+          <h3 className = "windowTitle" >
+            <i className="fas fa-pencil-alt"
+                onClick = {this.handleEditor}>
+            </i> Editor
+          </h3>
         </div>
         <textarea id = "editor" value = {this.state.text} onChange = {this.updateText}/>
       </div>
 
       <div id = "previewerWindow">
         <div className = "windowTop">
-          <h3 className = "windowTitle" ><i className="fas fa-file-alt"></i> Previewer</h3>
+          <h3 className = "windowTitle" ><i className="fas fa-file-alt" onClick = {this.handlePreview}></i> Previewer</h3>
         </div>
         <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
           <div id='preview' dangerouslySetInnerHTML={{__html: marked(defaultState.text)}}/>
@@ -68,7 +96,9 @@ export default MarkdownApp;
 /*________________________________Data______________________________________*/
 
 const defaultState = {
-  text: `# Welcome to my React Markdown Previewer!
+  text: `# Click icons to maximize-minimize!
+
+  # Welcome to my React Markdown Previewer!
 
 ## This is a sub-heading...
 ### And here's some other cool stuff:
